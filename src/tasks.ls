@@ -32,8 +32,15 @@ glob                     = require \glob .sync
 
 {compile, build, minify, bundle:bundler} = require \./compile
 {expand-macros}                          = require \./process
+packaging                                = require \./packaging
 fs                                       = require \./fs
 log                                      = require \./logging
+
+
+raise-failure = (error, stdout, stderr) ->
+  if error
+    error.message += "\n\nSTDOUT\n: #stdout\n\nSTDERR\n: #stderr\n----\n"
+    throw error
 
 
 ### == Core implementation =============================================
@@ -48,7 +55,7 @@ compile-ls(source-dir, output-dir, options) =
 
 
 bundle(output-dir, options, entry, name) =
-  log.header "—› Generating browserify bundle <#name>."
+  log.header "—› Generating browserify bundle `#name'."
   try
     fs.initialise output-dir
     production = bundler {} <<< options
@@ -59,13 +66,30 @@ bundle(output-dir, options, entry, name) =
                            |> fs.write "#outputDir/#name.min.js"
 
     debugging [] .bundle!  |> fs.write "#outputDir/#name.dbg.js"
-    console.log (log.green "—› Browserify bundle <#name> successfully generated.")
+    console.log (log.green "—› Browserify bundle `#name' successfully generated.")
   catch e
-    log.log-error \bundle, [name], e, "Failed to generate the browserify bundle <#name>.'"
+    log.log-error \bundle, [name], e, "Failed to generate the browserify bundle `#name'.'"
+
+
+pack(output-dir, filename, files, callback) =
+  log.header "—› Generating package `#filename'."
+  try
+    fs.make output-dir
+    packaging.targz {cwd: output-dir}, "#filename", files, ->
+      raise-failure ...arguments
+      console.log (log.green "—› Generated tar.gz for `#filename'.")
+      packaging.zip {cwd: output-dir}, "#filename", files, ->
+        raise-failure ...arguments
+        console.log (log.green "—› Generated zip for `#filename'.")
+        console.log (log.green "—› Package `#filename' successfully generated.")
+        callback!
+  catch e
+    log.log-error \package, [filename], e, "Failed to generate packages for `#filename'."
 
 
 ### Exports ############################################################
 module.exports = {
   compile-ls
   bundle
+  pack
 }
