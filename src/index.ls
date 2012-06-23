@@ -27,4 +27,6 @@
 
 ## Module slake-build-utils ############################################
 module.exports = {} <<< (require \./compile) \
-                    <<< (require \./process)
+                    <<< (require \./process) \
+                    <<< (require \./logging) \
+                    <<< (fs: require \./fs)
