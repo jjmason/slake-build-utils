@@ -30,9 +30,10 @@
 ### == Dependencies ====================================================
 glob                     = require \glob .sync
 
-{compile, build, minify} = require \./compile
-{expand-macros}          = require \./process
-fs                       = require \./fs
+{compile, build, minify, bundle:bundler} = require \./compile
+{expand-macros}                          = require \./process
+fs                                       = require \./fs
+log                                      = require \./logging
 
 
 ### == Core implementation =============================================
@@ -46,10 +47,25 @@ compile-ls(source-dir, output-dir, options) =
   for file in glob '**/*.ls', cwd: source-dir => make file
 
 
+bundle(output-dir, options, entry, name) =
+  log.header "—› Generating browserify bundle <#name>."
+  try
+    fs.initialise output-dir
+    production = bundler {} <<< options
+    debugging  = bundler {} <<< options <<< {+debug}
 
+    production [] .bundle! |> fs.write "#outputDir/#name.js"
+                           |> minify options.minify
+                           |> fs.write "#outputDir/#name.min.js"
+
+    debugging [] .bundle!  |> fs.write "#outputDir/#name.dbg.js"
+    console.log (log.green "—› Browserify bundle <#name> successfully generated.")
+  catch e
+    log.log-error \bundle, [name], e, "Failed to generate the browserify bundle <#name>.'"
 
 
 ### Exports ############################################################
 module.exports = {
   compile-ls
+  bundle
 }

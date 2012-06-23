@@ -28,6 +28,7 @@
 ## Module slake-build-utils.compile ####################################
 
 ### == Dependencies ====================================================
+browserify       = require \browserify
 live-script      = require \LiveScript
 {parser, uglify} = require \uglify-js
 log              = require \./logging
@@ -72,9 +73,27 @@ minify(options = {}, source) = source |> parse                 \
                                       |> generate-code options
 
 
+bundle(options = {+bare, -prelude}, entries) =
+  b = browserify options
+  b.register '.ls', compile options
+
+  if (not options.prelude)
+    b.files    = []
+    b.prepends = []
+
+  each ((k, v) -> b.alias v, k), options.aliases ? {}
+  each b.ignore,                 options.ignore  ? []
+  each b.require,                options.require ? []
+  each b.add-entry,              entries         ? []
+
+  b
+
+
+
 ### Exports ############################################################
 module.exports = {
   build
   compile
   minify
+  bundle
 }
