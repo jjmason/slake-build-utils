@@ -1,4 +1,4 @@
-/** index.ls --- Exposes common utilities
+/** tasks.ls --- Ready-to-use parametrised build tasks
  *
  * Version: -:package.version:-
  *
@@ -25,9 +25,31 @@
  */
 
 
-## Module slake-build-utils ############################################
-module.exports = {} <<< (require \./compile)         \
-                    <<< (require \./process)         \
-                    <<< (require \./logging)         \
-                    <<< ( fs:    (require \./fs)     \
-                        , tasks: (require \./tasks) )
+## Module slake-build-utils.tasks ######################################
+
+### == Dependencies ====================================================
+glob                     = require \glob .sync
+
+{compile, build, minify} = require \./compile
+{expand-macros}          = require \./process
+fs                       = require \./fs
+
+
+### == Core implementation =============================================
+compile-ls(source-dir, output-dir, options) =
+  make = build source-dir, (file, source) -->
+    source |> compile options.compile               \
+           |> expand-macros options.environment     \
+           |> fs.write (fs.as-js "#outputDir/#file")
+
+  fs.initialise output-dir
+  for file in glob '**/*.ls', cwd: source-dir => make file
+
+
+
+
+
+### Exports ############################################################
+module.exports = {
+  compile-ls
+}
