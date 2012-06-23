@@ -66,7 +66,7 @@ header = (message) ->
 
 
 horizontal-line = (colour = \none) ->
-  console.log (colourise colour, 72 * "=")
+  console.log "\n" + (colourise colour, "=" * 72)
 
 
 log-error(kind, params, error, message) =
@@ -77,8 +77,8 @@ log-error(kind, params, error, message) =
 
 display-errors = ->
   unless empty errors
-    horizontal-line red
-    console.log (red "There were errors while running the build tasks:\n\n")
+    horizontal-line \white
+    console.log "There were errors while running the build tasks:\n"
     for e, i in errors
       [task, error] = e
       console.log (red "#{i + 1}) at #task:")
