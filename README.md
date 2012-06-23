@@ -18,10 +18,10 @@ environment =
 
 
 build = _.build \src (file, source) -->
-  source |> _.compile defaults               \
-         |> _.expand-macros environment      \
-         |> fs.write (fs.as-js "lib/#file")  \
-         |> _.minify defaults                \
+  source |> _.compile defaults
+         |> _.expand-macros environment
+         |> fs.write (fs.as-js "lib/#file")
+         |> _.minify defaults
          |> fs.write (fs.as-min "lib/#file") 
 
 
