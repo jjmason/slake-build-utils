@@ -30,6 +30,8 @@
 ### == Dependencies ====================================================
 live-script      = require \LiveScript
 {parser, uglify} = require \uglify-js
+log              = require \./logging
+fs               = require \./fs
 
 
 ### == Aliases =========================================================
@@ -41,6 +43,15 @@ generate-code(options, ast) = uglify.gen_code ast, options
 
 
 ### == Core implementation =============================================
+
+build(source-dir, process, file) =
+  log.header "—› Compiling `#file'."
+  try
+    fs.read "#sourceDir/#file" |> process file
+    console.log (log.green "—› `#file' compiled successfully.")
+  catch e
+    log.log-error \build, [file], e, "Failed to compile `#file'.'"
+
 
 #### Function compile
 # Compiles a String of LiveScript source.
@@ -63,6 +74,7 @@ minify(options = {}, source) = source |> parse                 \
 
 ### Exports ############################################################
 module.exports = {
+  build
   compile
   minify
 }
