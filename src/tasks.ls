@@ -50,14 +50,14 @@ compile-ls(source-dir, output-dir, options) =
            |> expand-macros options.environment     \
            |> fs.write (fs.as-js "#outputDir/#file")
 
-  fs.initialise output-dir
+  fs.make output-dir
   for file in glob '**/*.ls', cwd: source-dir => make file
 
 
 bundle(output-dir, options, entry, name) =
   log.header "—› Generating browserify bundle `#name'."
   try
-    fs.initialise output-dir
+    fs.make output-dir
     production = bundler {} <<< options
     debugging  = bundler {} <<< options <<< {+debug}
 
