@@ -57,7 +57,16 @@ for extra of Colour.extras
   colours["fx_#extra"] = colour-effect extra
 
 
-red = colourise \red
+red  = colourise \red
+
+
+header = (message) ->
+  message += " " * (72 - message.length)
+  console.log (colours.white_on_cyan message)
+
+
+horizontal-line = (colour = \none) ->
+  console.log (colourise colour, 72 * "=")
 
 
 log-error(kind, params, error, message) =
@@ -68,15 +77,18 @@ log-error(kind, params, error, message) =
 
 display-errors = ->
   unless empty errors
-    console.log (red "\n" + ("=" * 72))
+    horizontal-line red
     console.log (red "There were errors while running the build tasks:\n\n")
     for e, i in errors
       [task, error] = e
-      console.log (red "#{i + 1}) at #task:\n#{error.stack}\n")
+      console.log (red "#{i + 1}) at #task:")
+      console.log error.stack, "\n"
 
 
 ### Exports ############################################################
 module.exports = {
+  header
+  horizontal-line
   log-error
   display-errors
   colourise
