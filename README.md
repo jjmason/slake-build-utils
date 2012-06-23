@@ -50,6 +50,8 @@ JavaScript files in the `lib` directory:
     $ npm install -d
     $ slake build
     
+[LiveScript]: http://gkz.github.com/LiveScript/
+    
 
 ### Licence
 
