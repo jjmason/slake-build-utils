@@ -32,7 +32,8 @@ Colour = require \coloured
 
 
 ### == Helpers =========================================================
-errors = []
+errors   = []
+err-logs = 0
 
 
 ### == Core implementation =============================================
@@ -72,7 +73,7 @@ horizontal-line = (colour = \none) ->
 log-error(kind, params, error, message) =
   kind = "#kind <#{params.join ', '}>"
   errors.push [kind, error]
-  console.error (red "#{errors.length}) #message")
+  console.error (red "#{++err-logs}) #message")
 
 
 display-errors = ->
@@ -81,8 +82,9 @@ display-errors = ->
     console.log "There were errors while running the build tasks:\n"
     for e, i in errors
       [task, error] = e
-      console.log (red "#{i + 1}) at #task:")
+      console.log (red "#{i + (err-logs - errors.length) + 1}) at #task:")
       console.log error.stack, "\n"
+    errors := []
 
 
 ### Exports ############################################################
