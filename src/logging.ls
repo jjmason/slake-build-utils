@@ -43,18 +43,25 @@ colourise(colour, message) =
 colourise2(colour, bg, message) =
   Colour.colourise message, foreground: colour, background: bg
 
+colour-effect(effect, message) =
+  Colour.colourise message, extra: effect
+
 
 colours = {}
-for _, fg of Colour.colours
+for fg of Colour.colours
   colours[fg] = colourise fg
-  for _, bg of Colour.colours
+  for bg of Colour.colours
     colours["#{fg}_on_#{bg}"] = colourise2 fg, bg
+
+for extra of Colour.extras
+  colours["fx_#extra"] = colour-effect extra
+
 
 red = colourise \red
 
 
 log-error(kind, params, error, message) =
-  kind = "#kind <#{params.join ', '}"
+  kind = "#kind <#{params.join ', '}>"
   errors.push [kind, error]
   console.error (red "#{errors.length}) #message")
 
@@ -74,4 +81,5 @@ module.exports = {
   display-errors
   colourise
   colourise2
+  colour-effect
 } <<< colours
