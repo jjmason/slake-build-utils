@@ -1,0 +1,24 @@
+{
+  "author": "Quildreen Motta <quildreen@gmail.com> (http://killdream.github.com/)",
+  "name": "slake-build-utils",
+  "description": "Build utilities for Slakefiles.",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/killdream/slake-build-utils.git"
+  },
+  "main": "./src/index.ls",
+  "engines": {
+    "node": ">=0.6.x"
+  },
+  "dependencies": {
+    "LiveScript": "~0.9.9",
+    "uglify-js": "~1.3.1",
+    "prelude-ls": "~0.4.0",
+    "wrench": "~1.3.9",
+    "glob": "~3.1.10",
+    "coloured": "~0.2.0"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {}
+}
