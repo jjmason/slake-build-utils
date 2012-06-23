@@ -16,15 +16,18 @@ defaults    = void
 environment =
   package: require './package.json'
 
+build = _.build \src (file, source) -->
+  source |> _.compile defaults               \
+         |> _.expand-macros environment      \
+         |> fs.write (fs.as-js "lib/#file")  \
+         |> _.minify defaults                \
+         |> fs.write (fs.as-min "lib/#file") 
+
 
 task \build 'Builds JavaScript files out of LiveScript ones.' ->
   fs.initialise \lib
   for file in glob '**/*.ls', cwd: 'src'
-    fs.read "src/#file" |> _.compile defaults               \
-                        |> _.expand-macros environment      \
-                        |> fs.write (fs.as-js "lib/#file")  \
-                        |> _.minify defaults                \
-                        |> fs.write (fs.as-min "lib/#file")
+    build file
 ```
 
 
