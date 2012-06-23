@@ -8,8 +8,8 @@ common build utilities as a reusable library.
 ### Example
 
 ```coffee
-utils = require 'utils'
-fs    = require 'utils/src/fs'
+_  = require 'slake-build-utils'
+fs = _.fs
 glob  = require 'glob' .sync
 
 defaults    = void
@@ -20,10 +20,10 @@ environment =
 task \build 'Builds JavaScript files out of LiveScript ones.' ->
   fs.initialise \lib
   for file in glob '**/*.ls', cwd: 'src'
-    fs.read "src/#file" |> utils.compile defaults            \
-                        |> utils.expand-macros environment   \
-                        |> fs.write (fs.as-js "lib/#file")   \
-                        |> utils.minify defaults             \
+    fs.read "src/#file" |> _.compile defaults               \
+                        |> _.expand-macros environment      \
+                        |> fs.write (fs.as-js "lib/#file")  \
+                        |> _.minify defaults                \
                         |> fs.write (fs.as-min "lib/#file")
 ```
 
