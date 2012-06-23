@@ -36,12 +36,12 @@ wrench = require \wrench
 ### == Aliases =========================================================
 exists-p = fs.exists-sync || path.exists-sync
 make     = wrench.mkdir-sync-recursive
-remove   = wrench.rmdir-sync-recursive
+remove   = -> wrench.rmdir-sync-recursive it, true
 copy     = wrench.copy-dir-sync-recursive
 
 ### == Core implementation =============================================
 initialise = (path) ->
-  if (exists-p path) then remove path
+  remove path
   make path
 
 
