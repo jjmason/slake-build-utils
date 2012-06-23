@@ -8,13 +8,14 @@ common build utilities as a reusable library.
 ### Example
 
 ```coffee
-_  = require 'slake-build-utils'
-fs = _.fs
-glob  = require 'glob' .sync
+_    = require 'slake-build-utils'
+fs   = _.fs
+glob = require 'glob' .sync
 
 defaults    = void
 environment =
   package: require './package.json'
+
 
 build = _.build \src (file, source) -->
   source |> _.compile defaults               \
@@ -26,8 +27,7 @@ build = _.build \src (file, source) -->
 
 task \build 'Builds JavaScript files out of LiveScript ones.' ->
   fs.initialise \lib
-  for file in glob '**/*.ls', cwd: 'src'
-    build file
+  for file in glob '**/*.ls', cwd: 'src' => build file
 ```
 
 
