@@ -35,6 +35,7 @@ log              = require \./logging
 fs               = require \./fs
 
 
+
 ### == Aliases =========================================================
 parse                       = parser.parse
 mangle-ast(options, ast)    = uglify.ast_mangle ast, options
@@ -43,8 +44,28 @@ squeeze-ast(options, ast)   = uglify.ast_squeeze ast, options
 generate-code(options, ast) = uglify.gen_code ast, options
 
 
+
+### == Helpers =========================================================
+
+#### Function browserify-require
+# Adds a module to the bundle.
+#
+# browserify-require :: BrowserifyBundle -> String -> IO ()
+# browserify-require :: BrowserifyBundle -> { String -> String } -> IO ()
+browserify-require(bundle, module) =
+  | typeof module is \string => bundle.require module
+  | otherwise                => for target, path of module
+                                  bundle.require path, target: "/node_modules/#target/index.js"
+
+
+
+
 ### == Core implementation =============================================
 
+#### Function build
+# Compiles the file using the given processing function.
+#
+# build :: Pathname -> (String -> IO String) -> Pathname -> IO ()
 build(source-dir, process, file) =
   log.header "—› Compiling `#file'."
   try
@@ -73,8 +94,12 @@ minify(options = {}, source) = source |> parse                 \
                                       |> generate-code options
 
 
+#### Function bundle
+# Generates a browserify bundle with the given options.
+#
+# bundle :: BundleOptions -> [String] -> BrowserifyBundle
 bundle(options = {+bare, -prelude}, entries) =
-  b = browserify options
+  b = browserify cache: options.cache, debug: options.debug, exports: options.exports
   b.register '.ls', compile options
 
   if (not options.prelude)
@@ -83,13 +108,13 @@ bundle(options = {+bare, -prelude}, entries) =
 
   each ((k, v) -> b.alias v, k), options.aliases ? {}
   each b.ignore,                 options.ignore  ? []
-  each b.require,                options.require ? []
+  each (browserify-require b),   options.require ? []
   each b.add-entry,              entries         ? []
 
   b
 
 
-
+
 ### Exports ############################################################
 module.exports = {
   build
