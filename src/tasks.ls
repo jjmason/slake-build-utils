@@ -28,7 +28,8 @@
 ## Module slake-build-utils.tasks ######################################
 
 ### == Dependencies ====================================================
-glob                     = require \glob .sync
+{dirname} = require \path
+glob      = require \glob .sync
 
 {compile, build, minify, bundle:bundler} = require \./compile
 {expand-macros}                          = require \./process
@@ -46,11 +47,11 @@ raise-failure = (error, stdout, stderr) ->
 ### == Core implementation =============================================
 compile-ls(source-dir, output-dir, options) =
   make = build source-dir, (file, source) -->
+    fs.make (dirname "#outputDir/#file")
     source |> compile options.compile               \
            |> expand-macros options.environment     \
            |> fs.write (fs.as-js "#outputDir/#file")
 
-  fs.make output-dir
   for file in glob '**/*.ls', cwd: source-dir => make file
 
 
