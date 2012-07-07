@@ -27,7 +27,8 @@
 
 ## Module slake-build-utils ############################################
 module.exports = {} <<< (require './compile')
-                    <<< (require './process')
+                    <<< (require './bundle')
+                    <<< (require './shell')
                     <<< (require './packaging')
                     <<< (require './logging')
                     <<< do
