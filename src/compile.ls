@@ -80,11 +80,11 @@ generate-code(options, ast) = uglify.gen_code ast, options
 #
 # build :: Pathname -> (String -> IO String) -> Pathname -> IO String
 build(source-dir, process, file) =
-  log.header "—› Compiling `#file'."
+  log.header "→ Compiling `#file'."
   try
     result = process file
     fs.read "#sourceDir/#file" |> result
-    console.log (log.green "—› `#file' compiled successfully.")
+    console.log (log.green "→ `#file' compiled successfully.")
     result
   catch e
     log.log-error \build, [file], e, "Failed to compile `#file'.'"
