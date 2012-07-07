@@ -27,55 +27,77 @@
 
 ## Module slake-build-utils.logging ####################################
 
+
+
 ### == Dependencies ====================================================
 Colour = require \coloured
 
 
+
 ### == Helpers =========================================================
 errors   = []
 err-logs = 0
 
 
+
 ### == Core implementation =============================================
+
+#### Function colourise
+# Applies the given foreground colour to the message.
+#
+# colourise :: ColourName -> String -> String
 colourise(colour, message) =
   Colour.colourise message, foreground: colour
 
 
+#### Function colourise2
+# Applies the given foreground and background colour to the message.
+#
+# colourise2 :: ColourName -> ColourName -> String -> String
 colourise2(colour, bg, message) =
   Colour.colourise message, foreground: colour, background: bg
 
+
+#### Function colour-effect
+# Applies the given colour effect to the message.
+#
+# colour-effect :: EffectName -> String -> String
 colour-effect(effect, message) =
   Colour.colourise message, extra: effect
 
 
-colours = {}
-for fg of Colour.colours
-  colours[fg] = colourise fg
-  for bg of Colour.colours
-    colours["#{fg}_on_#{bg}"] = colourise2 fg, bg
 
-for extra of Colour.extras
-  colours["fx_#extra"] = colour-effect extra
-
-
-red  = colourise \red
-
-
+#### Function header
+# Displays a header on the standard output.
+#
+# header :: String -> IO ()
 header = (message) ->
   message += " " * (72 - message.length)
   console.log (colours.white_on_cyan message)
 
 
+#### Function horizontal-line
+# Displays an horizontal line on the standard output.
+#
+# horizontal-line :: ColourName? -> String
 horizontal-line = (colour = \none) ->
   console.log "\n" + (colourise colour, "=" * 72)
 
 
+#### Function log-error
+# Adds the error to the error log, which can be later on displayed.
+#
+# log-error :: String -> [String] -> Error -> String -> IO ()
 log-error(kind, params, error, message) =
   kind = "#kind <#{params.join ', '}>"
   errors.push [kind, error]
   console.error (red "#{++err-logs}) #message")
 
 
+#### Function display-errors
+# Displays previously logged errors and clears the log queue.
+#
+# display-errors :: () -> IO ()
 display-errors = ->
   unless empty errors
     horizontal-line \white
@@ -87,6 +109,29 @@ display-errors = ->
     errors := []
 
 
+
+### == Colour aliases ==================================================
+
+# Generates colours aliases for every possible combination.
+#
+# This means colours are available as both ``<foreground>`` (e.g.:
+# ``red``, ``white``) and ``<foreground>_on_<background>`` (e.g.:
+# ``black_on_white``).
+#
+# Effects are available as ``fx_<effect>`` (e.g.: ``fx_bold``).
+colours = {}
+for fg of Colour.colours
+  colours[fg] = colourise fg
+  for bg of Colour.colours
+    colours["#{fg}_on_#{bg}"] = colourise2 fg, bg
+
+for extra of Colour.extras
+  colours["fx_#extra"] = colour-effect extra
+
+red = colourise \red
+
+
+
 ### Exports ############################################################
 module.exports = {
   header
