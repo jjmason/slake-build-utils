@@ -26,10 +26,10 @@
 
 
 ## Module slake-build-utils ############################################
-module.exports = {} <<< (require \./compile)
-                    <<< (require \./process)
-                    <<< (require \./packaging)
-                    <<< (require \./logging)
+module.exports = {} <<< (require './compile')
+                    <<< (require './process')
+                    <<< (require './packaging')
+                    <<< (require './logging')
                     <<< do
-                        fs:    require \./fs
-                        tasks: require \./tasks
+                        fs:    require './fs'
+                        tasks: require './tasks'
