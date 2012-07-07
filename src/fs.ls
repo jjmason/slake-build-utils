@@ -33,31 +33,97 @@ path   = require \path
 wrench = require \wrench
 
 
-### == Aliases =========================================================
-exists-p = fs.exists-sync || path.exists-sync
-make     = wrench.mkdir-sync-recursive
-remove   = -> wrench.rmdir-sync-recursive it, true
-copy     = wrench.copy-dir-sync-recursive
-
+
 ### == Core implementation =============================================
+
+#### Function exists-p
+# Checks if a given path exists.
+#
+# exists? :: Pathname -> Boolean
+exists-p = fs.exists-sync || path.exists-sync
+
+
+#### Function make
+# Creates a directory and all its parents. Does nothing if the given
+# path already exists.
+#
+# make :: Pathname -> IO ()
+make = wrench.mkdir-sync-recursive
+
+
+#### Function remove
+# Removes the file tree at the given path. That is, the directory and
+# all its files/sub-directories.
+#
+# remove :: Pathname -> IO ()
+remove = -> wrench.rmdir-sync-recursive it, true
+
+
+#### Function copy
+# Copies the ``source`` tree to the ``destination``.
+#
+# copy :: Pathname -> Pathname -> IO ()
+copy(source, destination) = wrench.copy-dir-sync-recursive source, destination
+
+
+#### Function initialise
+# Initialises the directory at the given path. This will force the
+# creation of the directory and ensure that it's empty.
+#
+# initialise :: Pathname -> IO ()
 initialise = (path) ->
   remove path
   make path
 
 
-read = (file)    -> fs.read-file-sync file, \utf-8
+#### Function read
+# Returns the contents of the file at the given path, using utf-8
+# encoding.
+#
+# read :: Pathname -> String
+read = (file) -> fs.read-file-sync file, \utf-8
+
+
+#### Function write
+# Writes the given string to the file at the given path, using utf-8
+# encoding.
+#
+# write :: Pathname -> String -> IO String
 write(file, data) =
   fs.write-file-sync file, data, \utf-8
   data
 
+
+#### Function with-extension
+# Constructs a new pathname, changing the file's extension to the given
+# one.
+#
+# with-extension :: String -> Pathname -> Pathname
 with-extension(ext, file) =
   path.join (path.dirname file)
           , "#{path.basename file, path.extname file}#ext"
 
-as-js  = with-extension '.js'
+
+#### Function as-js
+# Constructs a new pathname, changing the extension to ``.js``
+#
+# as-js :: Pathname -> Pathname
+as-js = with-extension '.js'
+
+#### Function as-min
+# Constructs a new pathname, changing the extension to ``.min.js``
+#
+# as-min :: Pathname -> Pathname
 as-min = with-extension '.min.js'
+
+#### Function as-dbg
+# Constructs a new pathname, changing the extension to ``.dbg.js``
+#
+# as-dbg :: Pathname -> Pathname
 as-dbg = with-extension '.dbg.js'
 
+
+
 ### Exports ############################################################
 module.exports = {
   initialise
