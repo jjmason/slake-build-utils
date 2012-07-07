@@ -27,8 +27,31 @@
 
 ## Module slake-build-utils.compile ####################################
 
+
+### == Interfaces ======================================================
+
+#### Interface LiveScriptOptions
+#
+# bare :: Boolean
+
+
+#### Interface UglifyOptions
+#
+# toplevel      :: Boolean
+# except        :: Boolean
+# defines       :: Boolean
+# make_seqs     :: Boolean
+# dead_code     :: Boolean
+# beautify      :: Boolean
+# indent_start  :: Number
+# indent_level  :: Number
+# quote_keys    :: Boolean
+# space_colon   :: Boolean
+# ascii_only    :: Boolean
+# inline_script :: Boolean
+
+
 ### == Dependencies ====================================================
-browserify       = require \browserify
 live-script      = require \LiveScript
 {parser, uglify} = require \uglify-js
 log              = require \./logging
@@ -42,21 +65,6 @@ mangle-ast(options, ast)    = uglify.ast_mangle ast, options
 lift-variables              = uglify.ast_lift_variables
 squeeze-ast(options, ast)   = uglify.ast_squeeze ast, options
 generate-code(options, ast) = uglify.gen_code ast, options
-
-
-
-### == Helpers =========================================================
-
-#### Function browserify-require
-# Adds a module to the bundle.
-#
-# browserify-require :: BrowserifyBundle -> String -> IO ()
-# browserify-require :: BrowserifyBundle -> { String -> String } -> IO ()
-browserify-require(bundle, module) =
-  | typeof module is \string => bundle.require module
-  | otherwise                => for target, path of module
-                                  bundle.require path, target: "/node_modules/#target/index.js"
-
 
 
 
@@ -87,31 +95,12 @@ compile(options = {+bare}, source) =
 # Optimises JavaScript code for minimal network overhead.
 #
 # minify :: UglifyOptions -> String -> String
-minify(options = {}, source) = source |> parse                 \
-                                      |> lift-variables        \
-                                      |> mangle-ast options    \
-                                      |> squeeze-ast options   \
+minify(options = {}, source) = do
+                               source |> parse
+                                      |> lift-variables
+                                      |> mangle-ast options
+                                      |> squeeze-ast options
                                       |> generate-code options
-
-
-#### Function bundle
-# Generates a browserify bundle with the given options.
-#
-# bundle :: BundleOptions -> [String] -> BrowserifyBundle
-bundle(options = {+bare, -prelude}, entries) =
-  b = browserify cache: options.cache, debug: options.debug, exports: options.exports
-  b.register '.ls', compile options
-
-  if (not options.prelude)
-    b.files    = []
-    b.prepends = []
-
-  each ((k, v) -> b.alias v, k), options.aliases ? {}
-  each b.ignore,                 options.ignore  ? []
-  each (browserify-require b),   options.require ? []
-  each b.add-entry,              entries         ? []
-
-  b
 
 
 
@@ -120,5 +109,4 @@ module.exports = {
   build
   compile
   minify
-  bundle
 }
