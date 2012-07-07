@@ -51,6 +51,11 @@
 # inline_script :: Boolean
 
 
+#### Interface Pathname
+#
+# :: String
+
+
 ### == Dependencies ====================================================
 live-script      = require \LiveScript
 {parser, uglify} = require \uglify-js
@@ -73,12 +78,14 @@ generate-code(options, ast) = uglify.gen_code ast, options
 #### Function build
 # Compiles the file using the given processing function.
 #
-# build :: Pathname -> (String -> IO String) -> Pathname -> IO ()
+# build :: Pathname -> (String -> IO String) -> Pathname -> IO String
 build(source-dir, process, file) =
   log.header "—› Compiling `#file'."
   try
-    fs.read "#sourceDir/#file" |> process file
+    result = process file
+    fs.read "#sourceDir/#file" |> result
     console.log (log.green "—› `#file' compiled successfully.")
+    result
   catch e
     log.log-error \build, [file], e, "Failed to compile `#file'.'"
 
