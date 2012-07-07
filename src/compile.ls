@@ -59,8 +59,8 @@
 ### == Dependencies ====================================================
 live-script      = require \LiveScript
 {parser, uglify} = require \uglify-js
-log              = require \./logging
-fs               = require \./fs
+log              = require './logging'
+fs               = require './fs'
 
 
 
