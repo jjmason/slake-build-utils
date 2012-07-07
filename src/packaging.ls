@@ -26,22 +26,40 @@
 
 
 ## Module slake-build-utils.packaging ##################################
-{exec} = require \child_process
+{run} = require './shell'
 
 
-normalise = (files) ->
-  files.map JSON.stringify .join ' '
+
+### == Core implementation =============================================
+
+#### Function tar
+# Generates a plain tarball with the given files.
+#
+# tar :: ProcessOptions -> Pathname -> [Pathname] -> ProcessExecution
+tar(options = {}, filename, files) =
+  run [\tar \-cf "#filename.tar"] +++ files, options
 
 
-targz(options = {}, filename, files, callback) =
-  exec "tar -czf #filename.tar.gz #{normalise files}", options, callback
+#### Function tar-gz
+# Generates a gzipped tarball with the given files.
+#
+# tar-gz :: ProcessOptions -> Pathname -> [Pathname] -> ProcessExecution
+targz(options = {}, filename, files) =
+  run [\tar \-czf "#filename.tar.gz"] +++ files, options
 
 
-zip(options = {}, filename, files, callback) =
-  exec "zip -r #filename.zip #{normalise files}", options, callback
+#### Function zip
+# Generates a zip package with the given files.
+#
+# zip :: ProcessOptions -> Pathname -> [Pathname] -> ProcessExecution
+zip(options = {}, filename, files) =
+  run [\tar \-r "#filename.zip"] +++ files, options
 
 
+
+### Exports ############################################################
 module.exports = {
-  targz
+  tar
+  tar-gz
   zip
 }
