@@ -30,8 +30,9 @@ module.exports = (name = 'dist', output-dir = 'dist', filename, files) -->
 
   
   ### == Dependencies ====================================================
-  log = require '../logging'
-  package = require '../packaging'
+  log          = require '../logging'
+  package      = require '../packaging'
+  fs           = require '../fs'
   sequentially = require 'cassie/src/sequencing'
 
 
