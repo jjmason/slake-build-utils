@@ -46,3 +46,4 @@ module.exports = (name = 'build:ls', source-dir, output-dir, options) -->
   task name, 'Builds JavaScript files out of LiveScript ones.' ->
     log.header '→ Compiling LiveScript source files...'
     for file in glob '**/*.ls', cwd: source-dir => make file
+    console.log (_.green ':: Source files compiled successfully.')
