@@ -88,7 +88,6 @@ compile(options = {+bare}, source) =
 #
 # minify :: UglifyOptions -> String -> String
 minify(options = {}, source) = source |> parse                 \
-                                      |> lift-variables        \
                                       |> mangle-ast options    \
                                       |> squeeze-ast options   \
                                       |> generate-code options
