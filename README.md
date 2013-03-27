@@ -1,6 +1,8 @@
 slake-build-utils
 =================
 
+**This library only works with LiveScript 0.9.x. It is dead and has been replaced by the [Whisper](http://github.com/killdream/whisper) tool. Please use that instead**
+
 These utilities allow you to write moar concise Slakefiles, by providing some
 common build utilities as a reusable library.
 
